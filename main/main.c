@@ -3,13 +3,14 @@
 #include	"esp_event_loop.h"	//	for usleep
 
 #include	"neopixel.h"
+#include	<esp_log.h>
 
 #define	NEOPIXEL_PORT	18
-#define	NR_LED		32
+#define	NR_LED		25
 //#define	NR_LED		3
 //#define	NEOPIXEL_WS2812
 #define	NEOPIXEL_SK6812
-#define	NEOPIXEL_RMT_CHANNEL		RMT_CHANNEL_1
+#define	NEOPIXEL_RMT_CHANNEL		RMT_CHANNEL_2
 
 static	void
 test_neopixel()
@@ -17,8 +18,10 @@ test_neopixel()
 	pixel_settings_t px;
 	uint32_t		pixels[NR_LED];
 	int		i;
+	int		rc;
 
-	neopixel_init(NEOPIXEL_PORT, NEOPIXEL_RMT_CHANNEL);
+	rc = neopixel_init(NEOPIXEL_PORT, NEOPIXEL_RMT_CHANNEL);
+	ESP_LOGE("main", "neopixel_init rc = %d", rc);
 	usleep(1000*1000);
 
 	for	( i = 0 ; i < NR_LED ; i ++ )	{
@@ -26,7 +29,11 @@ test_neopixel()
 	}
 	px.pixels = (uint8_t *)pixels;
 	px.pixel_count = NR_LED;
+#ifdef	NEOPIXEL_WS2812
 	strcpy(px.color_order, "GRB");
+#else
+	strcpy(px.color_order, "GRBW");
+#endif
 
 	memset(&px.timings, 0, sizeof(px.timings));
 	px.timings.mark.level0 = 1;
@@ -49,18 +56,14 @@ test_neopixel()
 	px.timings.reset.duration1 = 900;
 #endif
 	px.brightness = 0x80;
-	np_show(&px, RMT_CHANNEL_1);
+	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 
 	int fact = 1;
 	while (1) {
 		usleep(1000*10);
-		for	( int j = 0 ; j < NR_LED ; j += px.nbits / 8 )	{
-			np_set_pixel_rgbw(&px, j + 0, i, i, i, i);
-			np_set_pixel_rgbw(&px, j + 1, i, i, i, i);
-			np_set_pixel_rgbw(&px, j + 2, i, i, i, i);
-#ifdef	NEOPIXEL_SK6812
-			np_set_pixel_rgbw(&px, j + 3, i, i, i, i);
-#endif
+		//ESP_LOGE("main", "fact = %d", fact);
+		for	( int j = 0 ; j < NR_LED ; j ++ )	{
+			np_set_pixel_rgbw(&px, j , i, i, i, i);
 		}
 		np_show(&px, NEOPIXEL_RMT_CHANNEL);
 		if ( fact > 0 ) {

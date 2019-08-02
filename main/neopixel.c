@@ -29,6 +29,7 @@
 
 #include <driver/gpio.h>
 #include <driver/rmt.h>
+#include <soc/dport_reg.h>
 
 #include "neopixel.h"
 #include <esp_log.h>
@@ -89,9 +90,14 @@ np_set_pixel_rgbw(
 	int		b,
 	int		w)
 {
-	uint8_t *p = (index * 3) + (uint8_t *)px->pixels;
+	uint8_t *p;
 	char	*o;
 
+	if	( px->nbits == 32 ) {
+		p = (index * 4) + (uint8_t *)px->pixels;
+	} else {
+		p = (index * 3) + (uint8_t *)px->pixels;
+	}
 	for	( o = px->color_order ; *o != 0 ; o ++ )	{
 		switch	(*o)	{
 		  case	'R':
