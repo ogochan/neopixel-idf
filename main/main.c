@@ -8,8 +8,8 @@
 #define	NEOPIXEL_PORT	18
 #define	NR_LED		25
 //#define	NR_LED		3
-//#define	NEOPIXEL_WS2812
-#define	NEOPIXEL_SK6812
+#define	NEOPIXEL_WS2812
+//#define	NEOPIXEL_SK6812
 #define	NEOPIXEL_RMT_CHANNEL		RMT_CHANNEL_2
 
 static	void

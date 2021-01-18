@@ -30,11 +30,13 @@
 #include <driver/gpio.h>
 #include <driver/rmt.h>
 #include <soc/dport_reg.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
 
 #include "neopixel.h"
 #include <esp_log.h>
 
-static xSemaphoreHandle neopixel_sem = NULL;
+static SemaphoreHandle_t neopixel_sem = NULL;
 static intr_handle_t rmt_intr_handle = NULL;
 static rmt_channel_t RMTchannel = RMT_CHANNEL_0;
 static uint16_t neopixel_pos, neopixel_half, neopixel_bufIsDirty, neopixel_termsent;
